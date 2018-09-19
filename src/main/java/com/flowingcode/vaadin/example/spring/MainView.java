@@ -8,6 +8,8 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.router.Route;
 
 @SuppressWarnings("serial")
@@ -22,9 +24,13 @@ public class MainView extends VerticalLayout {
 
 	Grid<Order> grid = new Grid<>(Order.class);
 
+	Binder<Order> binder = new Binder<>(Order.class);
+
 	public MainView() {
 
 		comboState.setItems(State.values());
+
+		initBindings();
 
 		HorizontalLayout editLayout = new HorizontalLayout(tfDescription, tfQuantity, dfDueDate, comboState, cbPriority);
 
@@ -38,6 +44,16 @@ public class MainView extends VerticalLayout {
 		editLayout.setHeight("110px");
 
 		add(editLayout, grid);
+	}
+
+	private void initBindings() {
+		binder.forField(tfDescription).asRequired().bind(Order::getDescription, Order::setDescription);
+		binder.forField(tfQuantity).asRequired().withConverter(new StringToIntegerConverter("Quantity must be integer"))
+				.withValidator(value -> (value > 0), "Quantity must be positive")
+				.bind(Order::getQuantity, Order::setQuantity);
+		binder.forField(dfDueDate).asRequired().bind(Order::getDueDate, Order::setDueDate);
+		binder.forField(comboState).asRequired().bind(Order::getState, Order::setState);
+		binder.bind(cbPriority, Order::isPriority, Order::setPriority);
 	}
 
 }
