@@ -36,6 +36,8 @@ public class MainView extends VerticalLayout {
 
 		initBindings();
 		grid.setItems(repository.getAll());
+		grid.removeColumnByKey("priority");
+		grid.addColumn(order->order.isPriority()?"YES":"NO").setHeader("Priority");
 
 		HorizontalLayout editLayout = new HorizontalLayout(tfDescription, tfQuantity, dfDueDate, comboState, cbPriority);
 
