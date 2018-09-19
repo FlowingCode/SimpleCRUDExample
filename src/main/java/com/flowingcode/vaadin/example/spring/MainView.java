@@ -39,12 +39,22 @@ public class MainView extends VerticalLayout {
 
 		Button btnCancel = new Button("Cancel", ev -> clearForm());
 
-		Button btnOk = new Button("OK", ev-> {
-			Order order = new Order();
-			binder.writeBeanIfValid(order);
-			repository.add(order);
-			grid.setItems(repository.getAll());
-			clearForm();
+		Button btnOk = new Button("OK", ev -> {
+			if (binder.validate().isOk()) {
+				Order order = grid.asSingleSelect().getValue();
+				
+				if (order!=null) {
+					binder.writeBeanIfValid(order);
+					grid.getDataProvider().refreshItem(order);
+				} else {
+					order = new Order();
+					binder.writeBeanIfValid(order);
+					repository.add(order);
+					grid.setItems(repository.getAll());
+				}
+				
+				clearForm();
+			}
 		});
 		
 		grid.addSelectionListener(event->{
