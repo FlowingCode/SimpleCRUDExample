@@ -7,11 +7,13 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
 
 @SuppressWarnings("serial")
@@ -70,6 +72,12 @@ public class MainView extends VerticalLayout {
 		editLayout.setDefaultVerticalComponentAlignment(Alignment.START);
 		editLayout.setVerticalComponentAlignment(Alignment.CENTER, cbPriority, btnOk, btnCancel);
 		editLayout.setHeight("110px");
+		
+		grid.addColumn(new ComponentRenderer<>(order->new Button(VaadinIcon.CLOSE_CIRCLE_O.create(), ev->{
+			repository.remove(order);
+			grid.setItems(repository.getAll());
+			grid.getDataProvider().refreshAll();
+		}))).setWidth("20px");
 
 		add(editLayout, grid);
 		clearForm();
