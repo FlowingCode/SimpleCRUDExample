@@ -46,6 +46,15 @@ public class MainView extends VerticalLayout {
 			grid.setItems(repository.getAll());
 			clearForm();
 		});
+		
+		grid.addSelectionListener(event->{
+			if (!event.getAllSelectedItems().isEmpty()) {
+				comboState.setReadOnly(false);
+				binder.readBean(grid.asSingleSelect().getValue());
+			} else {
+				clearForm();
+			}
+		});
 
 		editLayout.add(btnOk, btnCancel);
 		editLayout.setDefaultVerticalComponentAlignment(Alignment.START);
@@ -67,6 +76,7 @@ public class MainView extends VerticalLayout {
 	}
 	
 	private void clearForm() {
+		grid.asSingleSelect().setValue(null);
 		Order order = new Order();
 		order.setState(State.PENDING);
 		comboState.setReadOnly(true);
