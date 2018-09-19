@@ -37,13 +37,14 @@ public class MainView extends VerticalLayout {
 
 		HorizontalLayout editLayout = new HorizontalLayout(tfDescription, tfQuantity, dfDueDate, comboState, cbPriority);
 
-		Button btnCancel = new Button("Cancel");
+		Button btnCancel = new Button("Cancel", ev -> clearForm());
 
 		Button btnOk = new Button("OK", ev-> {
 			Order order = new Order();
 			binder.writeBeanIfValid(order);
 			repository.add(order);
 			grid.setItems(repository.getAll());
+			clearForm();
 		});
 
 		editLayout.add(btnOk, btnCancel);
@@ -52,6 +53,7 @@ public class MainView extends VerticalLayout {
 		editLayout.setHeight("110px");
 
 		add(editLayout, grid);
+		clearForm();
 	}
 
 	private void initBindings() {
@@ -62,6 +64,13 @@ public class MainView extends VerticalLayout {
 		binder.forField(dfDueDate).asRequired().bind(Order::getDueDate, Order::setDueDate);
 		binder.forField(comboState).asRequired().bind(Order::getState, Order::setState);
 		binder.bind(cbPriority, Order::isPriority, Order::setPriority);
+	}
+	
+	private void clearForm() {
+		Order order = new Order();
+		order.setState(State.PENDING);
+		comboState.setReadOnly(true);
+		binder.setBean(order);
 	}
 
 }
