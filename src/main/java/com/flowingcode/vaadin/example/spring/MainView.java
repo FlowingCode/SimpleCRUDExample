@@ -1,5 +1,7 @@
 package com.flowingcode.vaadin.example.spring;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -26,17 +28,23 @@ public class MainView extends VerticalLayout {
 
 	Binder<Order> binder = new Binder<>(Order.class);
 
-	public MainView() {
+	public MainView(@Autowired OrderRepository repository) {
 
 		comboState.setItems(State.values());
 
 		initBindings();
+		grid.setItems(repository.getAll());
 
 		HorizontalLayout editLayout = new HorizontalLayout(tfDescription, tfQuantity, dfDueDate, comboState, cbPriority);
 
 		Button btnCancel = new Button("Cancel");
 
-		Button btnOk = new Button("OK");
+		Button btnOk = new Button("OK", ev-> {
+			Order order = new Order();
+			binder.writeBeanIfValid(order);
+			repository.add(order);
+			grid.setItems(repository.getAll());
+		});
 
 		editLayout.add(btnOk, btnCancel);
 		editLayout.setDefaultVerticalComponentAlignment(Alignment.START);
